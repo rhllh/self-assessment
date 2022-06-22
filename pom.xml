@@ -51,10 +51,13 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
+          <!-- Build an executable JAR -->
           <configuration>
+            <finalName>${project.artifactId}</finalName>
             <archive>
               <manifest>
                 <addClasspath>true</addClasspath>
+                <classpathPrefix>lib/</classpathPrefix>
                 <mainClass>vttp2022.day8.workshop.Main</mainClass>
               </manifest>
             </archive>
