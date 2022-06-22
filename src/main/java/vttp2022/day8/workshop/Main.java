@@ -4,7 +4,7 @@ package vttp2022.day8.workshop;
  * Hello world!
  *
  */
-public class App 
+public class Main 
 {
     public static void main( String[] args )
     {
