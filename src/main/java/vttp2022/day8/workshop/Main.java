@@ -51,11 +51,15 @@ public class Main
                         }
                     }
                     break;
+                default:
+                    System.out.println( "Please use --port [option] or --docRoot [option]");
+                    System.exit(1);
+                    break;
                 }
 
-                System.out.println(PORT);
+                /*System.out.println(PORT);
                 for (String item : DOCROOT)
-                    System.out.println(item);
+                    System.out.println(item);*/
 
                 HttpServer httpServer = new HttpServer(PORT, DOCROOT);
                 httpServer.start();
