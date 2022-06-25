@@ -43,10 +43,10 @@ When the HTTP server starts, perform the following:
 
 ## Task 5
 
-- [ ] Create a thread pool with 3 threads
-- [ ] Server listens on the specified port and accepts incoming connections from the browser
-- [ ] When connection is established, it is handled by a thread from the threadpool
-- [ ] Main control thread goes back to waiting for new incoming connections
+- [X] Create a thread pool with 3 threads
+- [X] Server listens on the specified port and accepts incoming connections from the browser
+- [X] When connection is established, it is handled by a thread from the threadpool
+- [X] Main control thread goes back to waiting for new incoming connections
 
 ## Task 6
 

@@ -4,8 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Hello world!
- *
+ * Entry point of the HTTP server
  */
 public class Main 
 {
@@ -14,10 +13,10 @@ public class Main
         try {
             int PORT = 3000;
             List<String> DOCROOT = new LinkedList<>();
-            DOCROOT.add("./target");
+            //DOCROOT.add("./target");
             String[] dirs;
 
-            System.out.println( "Hello World!" );
+            System.out.println( "I am a web server!" );
             System.out.println();
             
             switch (args.length) {
@@ -30,11 +29,10 @@ public class Main
                         PORT = Integer.parseInt(args[1]);
                     else if (args[0].toUpperCase().equals("--DOCROOT")) {
                         DOCROOT.clear();
-                        dirs = args[1].split(":");
+                        dirs = args[1].split(":");  // what if only one?
                         for (int i = 0; i < dirs.length; i++) {
                             DOCROOT.add(dirs[i]);
                         }
-                            
                     }
                     break;
                 case 4:
@@ -65,7 +63,7 @@ public class Main
                 httpServer.start();
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error: " + e.getMessage());
         }
     }
 }

@@ -1,4 +1,3 @@
-// TODO: Change to your package 
 package vttp2022.day8.workshop;
 
 import java.io.*;
