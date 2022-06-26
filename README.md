@@ -53,7 +53,7 @@ When the HTTP server starts, perform the following:
 The client thread (handling the client connection) should perform the following tasks:
 
 1. [x] Read the first line from the incoming request
-2. [ ] If the request is ***not a `GET` method***, send the following response:
+2. [x] If the request is ***not a `GET` method***, send the following response:
     ```
     HTTP/1.1 405 Method Not Allowed\r\n
     \r\n
@@ -91,7 +91,7 @@ The client thread (handling the client connection) should perform the following 
 
 - [x] Create a directory called `static` at the root of the project folder
 - [x] Write a HTML document `index.html` with
-    - [ ] any PNG image, which must be in the `static` folder,
+    - [x] any PNG image, which must be in the `static` folder,
     - [x] a header line `<h1>` with any text,
     - [x] a link to another HTML document in the `static` directory
     - [x] any text resources (CSS/JavaScript) referenced by `index.html` should also be placed in the `static` directory
@@ -102,3 +102,10 @@ Run the HTTP server and see if you can access the HTML document from the server
 http://localhost:<port>
 http://localhost:<port>/index.html
 ```
+
+### For Reference
+
+- [1](http://gauss.ececs.uc.edu/franco_files/Java/serverdocs.html)
+- [2](https://www.w3.org/Protocols/rfc2068/rfc2068)
+- [3](https://evertpot.com/http/405-method-not-allowed)
+- [4](https://www3.ntu.edu.sg/home/ehchua/programming/webprogramming/HTTP_Basics.html)
