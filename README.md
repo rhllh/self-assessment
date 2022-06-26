@@ -35,11 +35,11 @@ Command line examples (for `self-assessment.jar`):
 
 When the HTTP server starts, perform the following:
 - [x] open a TCP connection and listen on the port from `port` option
-- [ ] Check each path of the docRoot; for each path verify that
-    - [ ] the path exists,
-    - [ ] the path is a directory,
-    - [ ] the path is readable by the server
-- [ ] If any conditions fail, print the failure reason on the console, stop the server and exit the program with `System.exit(1)`
+- [x] Check each path of the docRoot; for each path verify that
+    - [x] the path exists,
+    - [x] the path is a directory,
+    - [x] the path is readable by the server
+- [x] If any conditions fail, print the failure reason on the console, stop the server and exit the program with `System.exit(1)`
 
 ## Task 5
 
@@ -52,7 +52,7 @@ When the HTTP server starts, perform the following:
 
 The client thread (handling the client connection) should perform the following tasks:
 
-1. [ ] Read the first line from the incoming request
+1. [x] Read the first line from the incoming request
 2. [ ] If the request is ***not a `GET` method***, send the following response:
     ```
     HTTP/1.1 405 Method Not Allowed\r\n
@@ -61,7 +61,7 @@ The client thread (handling the client connection) should perform the following 
     ```
     Close the connection and exit the thread.
 
-3. [ ] If the ***requested resource is not found*** send the following response:
+3. [x] If the ***requested resource is not found*** send the following response:
     ```
     HTTP/1.1 404 Not Found\r\n
     \r\n
@@ -69,9 +69,9 @@ The client thread (handling the client connection) should perform the following 
     ```
     Close the connection and exit the thread
 
-    If the resource name is /, replace it with `/index.html` before performing a file search
+    If the resource name is `/`, replace it with `/index.html` before performing a file search
 
-4. [ ] If the ***resource is found*** in any of the `docRoot` directories, send the resource contents as bytes back to the client with the response
+4. [x] If the ***resource is found*** in any of the `docRoot` directories, send the resource contents as bytes back to the client with the response
     ```
     HTTP/1.1 200 OK\r\n
     \r\n
@@ -79,7 +79,7 @@ The client thread (handling the client connection) should perform the following 
     ```
     Close the connection and exit the thread
 
-5. [ ] If the requested resource exists and ends with `.png`, then the resource is a PNG image. The response is
+5. [x] If the requested resource exists and ends with `.png`, then the resource is a PNG image. The response is
     ```
     HTTP/1.1 200 OK\r\n
     \r\n
@@ -91,7 +91,7 @@ The client thread (handling the client connection) should perform the following 
 
 - [x] Create a directory called `static` at the root of the project folder
 - [x] Write a HTML document `index.html` with
-    - [x] any PNG image, which must be in the `static` folder,
+    - [ ] any PNG image, which must be in the `static` folder,
     - [x] a header line `<h1>` with any text,
     - [x] a link to another HTML document in the `static` directory
     - [x] any text resources (CSS/JavaScript) referenced by `index.html` should also be placed in the `static` directory
