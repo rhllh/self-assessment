@@ -1,15 +1,17 @@
 package vttp2022.day8.workshop;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
 /*
  * This class handles the request and response communication 
@@ -17,13 +19,15 @@ import java.net.Socket;
  */
 public class HttpClientConnection implements Runnable {
     private Socket socket;
+    private List<String> DOCROOT = new LinkedList<>();
     private InputStream is = null;
     private OutputStream os = null;
     private InputStreamReader isr = null;
-    private BufferedReader br = null;
+    private File resourceFile;
 
-    public HttpClientConnection(Socket socket) {
+    public HttpClientConnection(Socket socket, List<String> DOCROOT) {
         this.socket = socket;
+        this.DOCROOT = DOCROOT;
     }
 
     @Override
@@ -31,13 +35,10 @@ public class HttpClientConnection implements Runnable {
         System.out.println("Starting client thread");
 
         BufferedReader br = null;
-        PrintWriter pw = null;
-        BufferedOutputStream bos = null;
-        String fileRequested = "";
+        DataInputStream dis = null;
+        PrintStream ps = null;
 
-        String requestedResource = "";
         String incomingLineFromClient;
-        String methodName;
 
         try {
             is = socket.getInputStream();
@@ -46,61 +47,129 @@ public class HttpClientConnection implements Runnable {
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
 
+            ps = new PrintStream(os);
+
             while ((incomingLineFromClient = br.readLine()) != null) {
-                System.out.println("The request message: " + incomingLineFromClient);
+                if (incomingLineFromClient.isEmpty()) break;
 
-                if (incomingLineFromClient.contains("HTTP/1.1")) {
-                    requestedResource = incomingLineFromClient;
+                System.out.println("\nThe request message: " + incomingLineFromClient);
+
+                String[] request = incomingLineFromClient.split(" ");
+                
+                if (request[0].equals("GET")) {
+
+                    String resourceName = request[1];
+                    if (resourceName.contains(".ico")) continue;
+                    if (resourceName.equals("/")) resourceName = "/index.html";
+                    System.out.println("Resource requested: " + resourceName);
+
+                    // file not found
+                    boolean doesFileExist = checkFileInDOCROOT(resourceName);
+                    if (!doesFileExist) {
+                        System.out.println("File not found");
+                        // response message header, no body
+                        fileNotFoundHeader(ps, request[1]);
+                        break;
+                    }
+
+                    dis = new DataInputStream(new FileInputStream(this.resourceFile));
+
+                    String fileExt = resourceName.split("\\.")[1];
+
+                    // response message header
+                    fileFoundHeader(ps, (int) this.resourceFile.length(), fileExt);
+
+                    // response message body
+                    responseMsgBody(ps, dis, (int) this.resourceFile.length());
+
+                } else if (request[0].equals("POST") ||
+                           request[0].equals("PUT")  ||
+                           request[0].equals("PATCH") ||
+                           request[0].equals("DELETE") ||
+                           request[0].equals("HEAD")) 
+                {
+                    // non-GET methods
+                    System.out.println("Method not found");
+
+                    // response message header, no body
+                    methodNotAllowedHeader(ps, request[0]);
+
+                } else {
+                    // other input lines
+                    continue;
                 }
-
-                if (incomingLineFromClient.equals(""))
-                    break;
             }
 
-            PrintWriter out = new PrintWriter(os);
-
-            String response = "You have requested this resource: " + requestedResource;
-
-            out.print("HTTP/1.1 200 OK\n");
-            out.print("Content-Length: " + response.length() + "\n");
-            out.print("Content-Type: text/html; charset=utf-8\n");
-            out.print("Date: Tue, 25 Oct 2016 08:17:59 GMT\n");
-            out.print("\n");
-            out.print(response);
-            out.flush();
-
-            //socket.close();
-
-            //sendPage(socket);
-            
-            //String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + "hello u";
-            //os.write(httpResponse.getBytes("UTF-8"));
-            
+            System.out.println("Returned thread");
+   
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
+        } finally {
+            // close connection and exit thread
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {}
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {}
+            }
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {}
+            }
         }        
     }
 
-    public void sendPage(Socket socket) throws IOException {
-        File index = new File("./static/index.html");
+    public void methodNotAllowedHeader(PrintStream ps, String methodName) {
+        ps.print("HTTP/1.1 405 Method Not Allowed\r\n");
+        ps.print("\r\n");
+        ps.print(methodName + " not supported\r\n");
+    }
 
-        PrintWriter writer = new PrintWriter(os);
+    public boolean checkFileInDOCROOT(String fileName) {
+        for (String item : DOCROOT) {
+            File file = new File(item + fileName);
+            if (file.exists()) {
+                this.resourceFile = file;
+                return true;
+            }
+        }
+        return false;
+    }
 
-        BufferedReader reader = new BufferedReader(new FileReader(index));
-
-        // HTTP headers
-        writer.println("HTTP/1.1 200 OK");
-        writer.println("Content-Type: text/html");
-        writer.println("Content-Length: " + index.length());
-        writer.println("\r\n");
-        String line = reader.readLine();
-        while (line != null)
-        {
-            writer.println(line);
-            line = reader.readLine();
+    public void fileFoundHeader(PrintStream ps, int fileLength, String fileExt) {
+        ps.print("HTTP/1.1 200 OK\r\n");
+        ps.print("Content-Length: " + fileLength + "\r\n");
+        
+        if (fileExt.equals("html")) {
+            ps.print("Content-Type: text/html; charset=utf-8\r\n");
+        } else if (fileExt.equals("css")) {
+            ps.print("Content-Type: text/css; charset=utf-8\r\n");
+        } else if (fileExt.equals("png")) {
+            ps.print("Content-Type: image/png; charset=utf-8\r\n");
         }
 
-        reader.close();
-        writer.close();
+        ps.print("\r\n");
+    }
+
+    public void fileNotFoundHeader(PrintStream ps, String resourceName) {
+        ps.print("HTTP/1.1 404 Not Found\r\n");
+        ps.print("\r\n");
+        ps.print(resourceName + " not found\r\n");
+    }
+
+    public void responseMsgBody(PrintStream ps, DataInputStream dis, int fileLength) {
+        try {
+            byte buffer[] = new byte[fileLength];
+            dis.readFully(buffer);
+            ps.write(buffer, 0, fileLength);
+            dis.close();
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        }
     }
 }

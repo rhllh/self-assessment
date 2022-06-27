@@ -41,29 +41,36 @@ public class HttpServer {
         }
 
         // start the server
-        threadPool = Executors.newFixedThreadPool(numOfThreads);
-        server = new ServerSocket(PORT);
-        System.out.printf("Waiting for client to connect on port %s..\n", PORT);
-        int count = 0;
+        try {
+            threadPool = Executors.newFixedThreadPool(numOfThreads);
+            server = new ServerSocket(PORT);
+            System.out.printf("Waiting for client to connect on port %s..\n", PORT);
+            int count = 0;
 
-        while (true) {
-            try {
-                Socket socket = server.accept();
-                count++;
-                System.out.printf("\nClient has connected #%d\n", count);
+            while (true) {
+                try {
+                    Socket socket = server.accept();
+                    count++;
+                    System.out.printf("\nClient has connected #%d\n", count);
 
-                // instantiate a clientconnection object
-                HttpClientConnection t = new HttpClientConnection(socket);
-                threadPool.submit(t);
+                    // instantiate a clientconnection object
+                    HttpClientConnection t = new HttpClientConnection(socket, DOCROOT);
+                    threadPool.submit(t);
 
-                System.out.println("Submitted to thread");
-               
-            } catch (Exception e) {
-                server.close();
-                e.printStackTrace();
+                    System.out.println("Submitted to thread");
                 
-                System.exit(1);
+                } catch (Exception e) {
+                    server.close();
+                    System.err.println(e.getMessage());
+                    
+                    System.exit(1);
+                }
             }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        } finally {
+            if (server != null)
+                server.close();
         }
 
     }
