@@ -49,7 +49,9 @@ public class HttpClientConnection implements Runnable {
 
             ps = new PrintStream(os);
 
+            // TASK 6
             while ((incomingLineFromClient = br.readLine()) != null) {
+                // read request line from client (browswer) until there are no more lines to read
                 if (incomingLineFromClient.isEmpty()) break;
 
                 System.out.println("\nThe request message: " + incomingLineFromClient);
@@ -60,7 +62,7 @@ public class HttpClientConnection implements Runnable {
 
                     String resourceName = request[1];
                     if (resourceName.contains(".ico")) continue;
-                    if (resourceName.equals("/")) resourceName = "/index.html";
+                    if (resourceName.equals("/")) resourceName = "/index.html";     // default resource
                     System.out.println("Resource requested: " + resourceName);
 
                     // file not found
@@ -74,6 +76,7 @@ public class HttpClientConnection implements Runnable {
 
                     dis = new DataInputStream(new FileInputStream(this.resourceFile));
 
+                    // get file extension
                     String fileExt = resourceName.split("\\.")[1];
 
                     // response message header
@@ -141,6 +144,7 @@ public class HttpClientConnection implements Runnable {
         return false;
     }
 
+    // TASK 7
     public void fileFoundHeader(PrintStream ps, int fileLength, String fileExt) {
         ps.print("HTTP/1.1 200 OK\r\n");
         ps.print("Content-Length: " + fileLength + "\r\n");

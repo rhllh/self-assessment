@@ -13,29 +13,29 @@ public class Main
         try {
             int PORT = 3000;
             List<String> DOCROOT = new LinkedList<>();
-            //DOCROOT.add("./target");
             String[] dirs;
 
             System.out.println( "I am a web server!" );
             System.out.println();
             
+            // TASK 3
             switch (args.length) {
-                case 0:
+                case 0:     // default values
                     PORT = 3000;
                     DOCROOT.add("./target");
                     break;
-                case 2:
+                case 2:     // only PORT or only DOCROOT is specified
                     if (args[0].toUpperCase().equals("--PORT"))
                         PORT = Integer.parseInt(args[1]);
                     else if (args[0].toUpperCase().equals("--DOCROOT")) {
                         DOCROOT.clear();
-                        dirs = args[1].split(":");  // what if only one?
+                        dirs = args[1].split(":");
                         for (int i = 0; i < dirs.length; i++) {
                             DOCROOT.add(dirs[i]);
                         }
                     }
                     break;
-                case 4:
+                case 4:     // both PORT and DOCROOT are specified, the order doesn't matter
                     for (int i = 0; i < 4; i++) {
                         if (args[i].toUpperCase().equals("--PORT"))
                             PORT = Integer.parseInt(args[i+1]);
@@ -49,16 +49,13 @@ public class Main
                         }
                     }
                     break;
-                default:
-                    System.out.println( "Please use --port [option] or --docRoot [option]");
+                default:    // otherwise input is invalid
+                    System.out.println( "Please use --port [port number] or --docRoot [directory path]");
                     System.exit(1);
                     break;
                 }
 
-                /*System.out.println(PORT);
-                for (String item : DOCROOT)
-                    System.out.println(item);*/
-
+                // start the server
                 HttpServer httpServer = new HttpServer(PORT, DOCROOT);
                 httpServer.start();
 

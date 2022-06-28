@@ -25,7 +25,7 @@ public class HttpServer {
     }
 
     public void start() throws IOException {
-        // check paths of docRoot
+        // TASK 4 - check paths of docRoot
         for (String path : DOCROOT) {
             File f = new File(path);
             if (f.exists() && f.isDirectory())
@@ -42,10 +42,11 @@ public class HttpServer {
 
         // start the server
         try {
+            // TASK 5
             threadPool = Executors.newFixedThreadPool(numOfThreads);
             server = new ServerSocket(PORT);
             System.out.printf("Waiting for client to connect on port %s..\n", PORT);
-            int count = 0;
+            int count = 0;      // just for tracking
 
             while (true) {
                 try {
@@ -69,6 +70,7 @@ public class HttpServer {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         } finally {
+            // close the server no matter what
             if (server != null)
                 server.close();
         }
