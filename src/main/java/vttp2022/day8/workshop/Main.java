@@ -11,7 +11,7 @@ public class Main
     public static void main( String[] args )
     {
         try {
-            int PORT = 3000;
+            int PORT = 80;
             List<String> DOCROOT = new LinkedList<>();
             String[] dirs;
 
@@ -21,7 +21,7 @@ public class Main
             // TASK 3
             switch (args.length) {
                 case 0:     // default values
-                    PORT = 3000;
+                    PORT = 80;
                     DOCROOT.add("./target");
                     break;
                 case 2:     // only PORT or only DOCROOT is specified
